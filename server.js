@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const ytDlpPath = process.platform === 'win32' ? 'yt-dlp.exe' : 'C:\Users\GANESH S. CHAVAN\AppData\Roaming\Python\Python312\Scripts';
+const ytDlpPath = process.platform === 'win32' ? 'yt-dlp.exe' : 'C:\Users\GANESH S. CHAVAN\AppData\Roaming\Python\Python312\Scripts\yt-dlp';
 
 const calculateAspectRatio = (width, height) => {
   if (!width || !height) return 'N/A';
