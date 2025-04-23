@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px 50px 20px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .audio-row {
+      background-color: #f0f8ff;
+    }
+    .download-btn {
+  display: inline-block;
+  background-color: #28a745; /* Green */
+  color: white;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.download-btn:hover {
+  background-color: #218838;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>YouTube Video Downloader</h2>
+    <input type="text" id="videoUrl" placeholder="Paste YouTube URL here" />
+    <button onclick="fetchVideoInfo()">Get Formats</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function fetchVideoInfo() {
+      const url = document.getElementById('videoUrl').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = 'Loading...';
+
+      try {
+        const res = await fetch(`/video-info?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          return;
+        }
+
+        let html = `<h3>${data.title}</h3>`;
+        html += `<img src="${data.thumbnail}" alt="Thumbnail" width="100%" />`;
+        html += `<table><tr><th>Quality</th><th>Resolution</th><th>Size</th><th>Download</th></tr>`;
+
+        data.formats.forEach(format => {
+          html += `
+            <tr class="${format.container === 'mp3' ? 'audio-row' : ''}">
+              <td>${format.qualityLabel}</td>
+              <td>${format.resolution}</td>
+              <td>${format.size}</td>
+              <td><a href="/download?url=${encodeURIComponent(url)}&itag=${format.itag}" target="_blank"class="download-btn">Download</a></td>
+            </tr>
+          `;
+        });
+
+        html += `</table>`;
+        resultDiv.innerHTML = html;
+
+      } catch (err) {
+        resultDiv.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
